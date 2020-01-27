@@ -34,6 +34,7 @@ public class CBTool implements Tool {
 	public void run() {
 		editor.statusNotice("Detecting Features...");
 		try {
+			System.out.println(getVersionString());
 			SketchFile sf = editor.getCurrentTab().getSketchFile();
 			System.out.println("Generating Features file from " + sf.getFileName());
 			// Simply calling the same function that is called when the Verify/Compile button is pressed

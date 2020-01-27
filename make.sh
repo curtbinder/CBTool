@@ -12,9 +12,3 @@ javac -target 1.8 -source 1.8 \
 cd bin
 zip -x *.DS_Store -r ../tool/cbtool.jar *
 cd ..
-
-# Make the zip file for distribution
-mkdir CBTool/
-cp -r tool CBTool
-zip -r distribution/CBTool-version.zip CBTool/*
-rm -rf CBTool/
