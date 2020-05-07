@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CBTool implements Tool {
-	private static final String VERSION = "2.0.0";
+	private static final String VERSION = "2.0.1";
 	private static final String NAME = "CBTool";
 	private static final String FILE_HEADER = "" +
 			"/*\n" +
@@ -84,7 +84,7 @@ public class CBTool implements Tool {
 	}
 	
 	public String getMenuTitle() {
-		return "CB Reef Angel Compile";
+		return "CB Reef Angel Process Sketch";
 	}
 	
 	private String getVersionString() {
@@ -112,14 +112,17 @@ public class CBTool implements Tool {
 		}
 
 		updateStatus("Finished.");
-		System.out.println("Starting compile.");
+		System.out.println("Ready to compile & upload.");
 
 		// compile
+		/*
 		Runnable presentHandler = new LocalBuildHandler(editor, false);
 		Runnable runHandler = new LocalBuildHandler(editor);
 		editor.handleRun(false, presentHandler, runHandler);
+		*/
 	}
 
+	/*
 	class LocalBuildHandler implements Runnable {
 
 		private final boolean verbose;
@@ -160,6 +163,7 @@ public class CBTool implements Tool {
 			editor.avoidMultipleOperations = false;
 		}
 	}
+	*/
 
 	private void updateStatus(String msg) {
 		editor.statusNotice(msg);
