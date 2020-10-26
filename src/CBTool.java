@@ -10,17 +10,19 @@ import java.io.File;
 import java.io.IOException;
 
 public class CBTool implements Tool {
-    private static final String VERSION = "2.2.0";
+    private static final String VERSION = "2.2.1";
     private static final String NAME = "CBTool";
 
     Editor editor;
     RAFeatures featuresFile;
     RALabels labelsFile;
+    RALibsVersion librariesVersion;
 
     public void init(Editor editor) {
         this.editor = editor;
         featuresFile = new RAFeatures();
         labelsFile = new RALabels();
+        librariesVersion = new RALibsVersion();
     }
 
     public String getMenuTitle() {
@@ -34,7 +36,7 @@ public class CBTool implements Tool {
     public void run() {
         System.out.println(getVersionString());
         init();
-        // TODO display libraries version
+        librariesVersion.display();
         if (!hasPrerequisites()) {
             // Failed to find proper files, do not proceed
             return;
@@ -71,6 +73,7 @@ public class CBTool implements Tool {
     private void init() {
         featuresFile.init(BaseNoGui.getSketchbookPath(), getFileName());
         labelsFile.init(BaseNoGui.getSketchbookPath(), getFileName());
+        librariesVersion.init(BaseNoGui.getSketchbookPath());
     }
 
     private void loadDefaults() {
