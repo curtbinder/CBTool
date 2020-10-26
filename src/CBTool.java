@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CBTool implements Tool {
-	private static final String VERSION = "2.0.1";
+	private static final String VERSION = "2.0.2";
 	private static final String NAME = "CBTool";
 	private static final String FILE_HEADER = "" +
 			"/*\n" +
@@ -68,6 +68,13 @@ public class CBTool implements Tool {
 	private static final String LABEL_LINE_START = "// RA_LABEL ";
 	private LinkedHashMap<String, String> mapLabels;
 
+	private static final String UPDATE_FEATURE_FOLDER = "/update/";
+	private static final String UPDATE_FEATURE_FILENAME = "feature.txt";
+	private static final String LIBRARY_FEATURES_FOLDER = "/libraries/ReefAngel_Features/";
+	private static final String LIBRARY_FEATURES_FILENAME = "ReefAngel_Features.h";
+	private static final String LIBRARY_LABELS_FOLDER = "/libraries/RA_CustomLabels/";
+	private static final String LIBRARY_LABELS_FILENAME = "RA_CustomLabels.h";
+	
 	private final int ID_DEFINE = 0;
 	private final int ID_KEYWORD = 1;
 	private final int ID_DESCRIPTION = 2;
@@ -78,9 +85,6 @@ public class CBTool implements Tool {
 	
 	public void init(Editor editor) {
 		this.editor = editor;
-		mapLabels = buildDefaultLabels();
-		listFeatures = buildDefaultFeatures();
-		listDetectedFeatures = new ArrayList<>();
 	}
 	
 	public String getMenuTitle() {
@@ -92,8 +96,13 @@ public class CBTool implements Tool {
 	}
 
 	public void run() {
-		updateStatus("Processing code for Features and Labels...");
 		System.out.println(getVersionString());
+		if (!checkFoldersAndFiles()) {
+			// Failed to find proper files, do not proceed
+			return;
+		}
+		initializeDefaults();
+		updateStatus("Processing code for Features and Labels...");
 
 		try {
 			System.out.println("Generating Features file from " + getFileName());
@@ -168,6 +177,55 @@ public class CBTool implements Tool {
 	private void updateStatus(String msg) {
 		editor.statusNotice(msg);
 	}
+	
+	private void initializeDefaults() {
+		// Load the default labels and features
+		mapLabels = buildDefaultLabels();
+		listFeatures = buildDefaultFeatures();
+		listDetectedFeatures = new ArrayList<>();
+	}
+	
+	private boolean checkFoldersAndFiles() {
+		// Checks that the proper files and folders exist
+		boolean fRet = false;
+		
+		// Create Features folder, if non existant
+		//Files.createDirectory(Paths.get(getLibraryFeaturesFolder()));
+		File dir = new File(getLibraryFeaturesFolder());
+		if (! dir.exists() ) {
+			System.out.println("Controller Features folder doesn't exist, creating it now.\n  --> " + getLibraryFeaturesFolder());
+			dir.mkdir();
+		}
+		
+		// Create Labels folder, if non existant
+		//Files.createDirectory(Paths.get(getLibraryLabelsFolder()));
+		dir = new File(getLibraryLabelsFolder());
+		if (! dir.exists() ) {
+			System.out.println("Custom Labels folder doesn't exist, creating it now.\n  --> " + getLibraryLabelsFolder());
+			dir.mkdir();
+		}
+				
+		// Check for the features.txt file
+		//getDefaultFeaturesFolder();
+		//getDefaultFeaturesFilename();
+		dir = new File(getDefaultFeaturesFolder());
+		if (! dir.exists()) {
+			System.out.println("Creating missing update folder");
+			dir.mkdir();
+		} else {
+			// Directory exists, now check if the master feature file exists
+			File f = new File(getDefaultFeaturesFolder() + getDefaultFeaturesFilename());
+			if (f.exists() && (f.length() > 0L) ) {
+				// File exists and the filesize is greather than 0 bytes
+				fRet = true;
+			} // otherwise, file doesn't exist or is zero bytes
+		}
+		if (!fRet) {
+			// We don't have the feature.txt file, so give a warning about it and offer to download it
+			System.out.println("ERROR!  Missing master feature.txt file.");
+		}
+		return fRet;
+	}
 
 	private String getProgram() {
 		return editor.getCurrentTab().getSketchFile().getProgram();
@@ -178,11 +236,19 @@ public class CBTool implements Tool {
 	}
 
 	private String getOutputFeaturesFile() {
-		return BaseNoGui.getSketchbookFolder() + "/libraries/ReefAngel_Features/ReefAngel_Features.h";
+		return getLibraryFeaturesFolder() + LIBRARY_FEATURES_FILENAME;
+	}
+	
+	private String getLibraryFeaturesFolder() {
+		return BaseNoGui.getSketchbookFolder() + LIBRARY_FEATURES_FOLDER;
 	}
 
 	private String getOutputLabelsFile() {
-		return BaseNoGui.getSketchbookFolder() + "/libraries/RA_CustomLabels/RA_CustomLabels.h";
+		return getLibraryLabelsFolder() + LIBRARY_LABELS_FILENAME;
+	}
+	
+	private String getLibraryLabelsFolder() {
+		return BaseNoGui.getSketchbookFolder() + LIBRARY_LABELS_FOLDER;
 	}
 
 	private void processLabels(String code) {
@@ -443,7 +509,11 @@ public class CBTool implements Tool {
 	}
 
 	private String getDefaultFeaturesFilename() {
-		return BaseNoGui.getSketchbookPath() + "/update/feature.txt";
+		return getDefaultFeaturesFolder() + UPDATE_FEATURE_FILENAME;
+	}
+	
+	private String getDefaultFeaturesFolder() {
+		return BaseNoGui.getSketchbookPath() + UPDATE_FEATURE_FOLDER;
 	}
 
 	private void processFeatures(String code) {
