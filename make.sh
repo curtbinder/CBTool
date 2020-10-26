@@ -7,7 +7,10 @@ CORE="/Users/binder/Applications/Arduino.app/Contents/Java/arduino-core.jar"
 javac -target 1.8 -source 1.8 \
   -cp "$CORE:$PDE" \
   -d bin \
-  src/CBTool.java
+  src/CBTool.java \
+  src/RABaseFile.java \
+  src/RAFeatures.java \
+  src/RALabels.java
 
 if [ ! -d "tool" ]; then
   # tool directory doesn't exist, so create it
