@@ -69,8 +69,8 @@ public class CBTool implements Tool {
     }
 
     private void init() {
-        featuresFile.init(BaseNoGui.getSketchbookFolder().toString(), getFileName());
-        labelsFile.init(BaseNoGui.getSketchbookFolder().toString(), getFileName());
+        featuresFile.init(BaseNoGui.getSketchbookPath(), getFileName());
+        labelsFile.init(BaseNoGui.getSketchbookPath(), getFileName());
     }
 
     private void loadDefaults() {
