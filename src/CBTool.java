@@ -190,7 +190,6 @@ public class CBTool implements Tool {
 		boolean fRet = false;
 		
 		// Create Features folder, if non existant
-		//Files.createDirectory(Paths.get(getLibraryFeaturesFolder()));
 		File dir = new File(getLibraryFeaturesFolder());
 		if (! dir.exists() ) {
 			System.out.println("Controller Features folder doesn't exist, creating it now.\n  --> " + getLibraryFeaturesFolder());
@@ -198,7 +197,6 @@ public class CBTool implements Tool {
 		}
 		
 		// Create Labels folder, if non existant
-		//Files.createDirectory(Paths.get(getLibraryLabelsFolder()));
 		dir = new File(getLibraryLabelsFolder());
 		if (! dir.exists() ) {
 			System.out.println("Custom Labels folder doesn't exist, creating it now.\n  --> " + getLibraryLabelsFolder());
@@ -206,8 +204,6 @@ public class CBTool implements Tool {
 		}
 				
 		// Check for the features.txt file
-		//getDefaultFeaturesFolder();
-		//getDefaultFeaturesFilename();
 		dir = new File(getDefaultFeaturesFolder());
 		if (! dir.exists()) {
 			System.out.println("Creating missing update folder");
