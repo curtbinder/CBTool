@@ -7,6 +7,7 @@ import processing.app.tools.Tool;
 import processing.app.helpers.PreferencesMapException;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +16,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 
 public class CBTool implements Tool {
-	private static final String VERSION = "2.0.2";
+	private static final String VERSION = "2.1.0";
 	private static final String NAME = "CBTool";
 	private static final String FILE_HEADER = "" +
 			"/*\n" +
@@ -74,6 +78,7 @@ public class CBTool implements Tool {
 	private static final String LIBRARY_FEATURES_FILENAME = "ReefAngel_Features.h";
 	private static final String LIBRARY_LABELS_FOLDER = "/libraries/RA_CustomLabels/";
 	private static final String LIBRARY_LABELS_FILENAME = "RA_CustomLabels.h";
+	private static final String MAIN_FEATURE_URL = "https://curtbinder.info/reefangel/feature.txt";
 	
 	private final int ID_DEFINE = 0;
 	private final int ID_KEYWORD = 1;
@@ -202,25 +207,52 @@ public class CBTool implements Tool {
 			System.out.println("Custom Labels folder doesn't exist, creating it now.\n  --> " + getLibraryLabelsFolder());
 			dir.mkdir();
 		}
-				
-		// Check for the features.txt file
-		dir = new File(getDefaultFeaturesFolder());
-		if (! dir.exists()) {
-			System.out.println("Creating missing update folder");
-			dir.mkdir();
-		} else {
-			// Directory exists, now check if the master feature file exists
-			File f = new File(getDefaultFeaturesFolder() + getDefaultFeaturesFilename());
-			if (f.exists() && (f.length() > 0L) ) {
-				// File exists and the filesize is greather than 0 bytes
-				fRet = true;
-			} // otherwise, file doesn't exist or is zero bytes
-		}
-		if (!fRet) {
-			// We don't have the feature.txt file, so give a warning about it and offer to download it
-			System.out.println("ERROR!  Missing master feature.txt file.");
-		}
+
+		int iDownloaded = 0;
+		do {
+			// Check for the features.txt file
+			dir = new File(getDefaultFeaturesFolder());
+			if (! dir.exists()) {
+				System.out.println("Creating missing update folder");
+				dir.mkdir();
+			} else {
+				// Directory exists, now check if the master feature file exists
+				File f = new File(getDefaultFeaturesFilename());
+				if (f.exists() && (f.length() > 0L) ) {
+					// File exists and the filesize is greather than 0 bytes
+					fRet = true;
+				} // otherwise, file doesn't exist or is zero bytes
+			}
+			if (!fRet && (iDownloaded < 1)) {
+				// We don't have the feature.txt file, so give a warning about it and offer to download it
+				// But only attempt to download it once
+				System.out.println("ERROR!  Missing main feature.txt file.");
+				try {
+					downloadMainFeatureFile();
+					System.out.println("Downloaded feature.txt file. Re-checking.");
+				} catch (IOException e) {
+					System.out.println("\nERROR!  Failed to download feature.txt file automatically.\n" +
+					"You must download it manually from: " + MAIN_FEATURE_URL + 
+					"\nThen move it to this folder: " + getDefaultFeaturesFolder() +
+					"\nAfter that, re-run the Process Sketch plugin");
+				}
+			}
+			++iDownloaded;
+		} while ((iDownloaded < 2) && !fRet);
 		return fRet;
+	}
+
+	private void downloadMainFeatureFile() throws IOException {
+		// Downloads the main feature file to the default location 
+		System.out.println("Downloading " + MAIN_FEATURE_URL);
+		System.out.println("Saving to " + getDefaultFeaturesFilename());
+
+		URL url = new URL(MAIN_FEATURE_URL);
+		ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+		FileOutputStream fos = new FileOutputStream(getDefaultFeaturesFilename());
+		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+		fos.close();
+		rbc.close();
 	}
 
 	private String getProgram() {
