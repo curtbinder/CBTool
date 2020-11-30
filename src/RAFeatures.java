@@ -178,6 +178,8 @@ public class RAFeatures extends RABaseFile {
         // handle the specific cases
         checkForRelayExpansions(code);
         checkForCustomMenu(code);
+
+        System.out.println("Build Date set to: " + getDateString());
     }
 
     private void addFeature(String[] feature) {
@@ -247,6 +249,8 @@ public class RAFeatures extends RABaseFile {
             sb.append(generateFeatureItem(s));
         }
 
+        sb.append(getBuildDateItem());
+
         sb.append("\n");
         sb.append(FEATURES_FOOTER);
 
@@ -255,5 +259,9 @@ public class RAFeatures extends RABaseFile {
 
     private String generateFeatureItem(String feature) {
         return String.format(FEATURE_ITEM_TEMPLATE, feature);
+    }
+
+    private String getBuildDateItem() {
+        return "#define CUSTOM_BUILD_DATE \"" + getDateString() +"\"\n";
     }
 }
