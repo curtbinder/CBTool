@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class CBTool implements Tool {
-    private static final String VERSION = "2.2.2";
+    private static final String VERSION = "2.3.0";
     private static final String NAME = "CBTool";
 
     Editor editor;
