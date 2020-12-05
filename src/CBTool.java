@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class CBTool implements Tool {
-    private static final String VERSION = "2.2.1";
+    private static final String VERSION = "2.2.2";
     private static final String NAME = "CBTool";
 
     Editor editor;
@@ -64,6 +64,7 @@ public class CBTool implements Tool {
             // Failed to find proper files, do not proceed
             return;
         }
+        displayCodeVersionString();
         loadDefaults();
         updateStatus("Processing code for Features and Labels...");
 
@@ -75,7 +76,7 @@ public class CBTool implements Tool {
             System.out.println("\nFinished detecting Features.\nGenerating Custom Labels file from " + getFileName());
             saveFile(labelsFile.generateFile(), labelsFile.getFileName());
             labelsFile.process(program);
-            
+
             System.out.println("\nFinished detecting Labels.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,6 +129,30 @@ public class CBTool implements Tool {
 
     private void saveFile(String fileContents, String fileName) throws IOException {
         BaseNoGui.saveFile(fileContents, new File(fileName));
+    }
+
+    private static String CODE_VERSION_START = "ReefAngel.SetCodeVersion(\"";
+    private static String CODE_VERSION_END = "\");";
+
+    private void displayCodeVersionString() {
+        String program = getProgram();
+        String version = "";
+        /*
+        Get Index of the function call to set the code version.
+        From that index, we need to locate the closing part of the function call.
+        The code version will be between the quotes.
+        */
+        int start_index = program.indexOf(CODE_VERSION_START);
+        if (start_index > 0) {
+            int end_index = program.indexOf(CODE_VERSION_END, start_index);
+            version = program.substring(start_index + CODE_VERSION_START.length(), end_index);
+        }
+        System.out.print("User Code Version: ");
+        if (version.isEmpty()) {
+            System.out.println("NONE");
+        } else {
+            System.out.println(version);
+        }
     }
 
     /*
