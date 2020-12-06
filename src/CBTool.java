@@ -29,12 +29,20 @@ import processing.app.SketchFile;
 import processing.app.tools.Tool;
 import processing.app.helpers.PreferencesMapException;
 
+import java.io.FileOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 
 public class CBTool implements Tool {
     private static final String VERSION = "2.3.0";
     private static final String NAME = "CBTool";
+    private static final String DOWNLOAD_URL = "https://curtbinder.info/reefangel/";
+    private static final String LATEST_VERSION_FILENAME = "cbtool-version.txt";
+    private static final String TOOLS_FOLDER = "/tools/";
+    private static final String ZIP_FILENAME_FORMAT = "CBTool-v%s.zip";
 
     Editor editor;
     RAFeatures featuresFile;
@@ -153,6 +161,63 @@ public class CBTool implements Tool {
         } else {
             System.out.println(version);
         }
+    }
+
+    /*
+    TODO
+        - download latest version file (store in /tools/ folder)
+        - read version from file
+        - compare against current version
+        - if versions match, do nothing
+        - if versions do not match, display message box to download latest version
+            - download latest version (store in /tools/ folder)
+            - extract it in place (extract in /tools/ folder)
+            - prompt to restart arduino to take effect
+            - delete zip file
+        - delete latest version file (stored in /tools/ folder)
+    */
+    private void checkForLatestVersion() {
+        if (!downloadFile(LATEST_VERSION_FILENAME)) {
+            System.out.println("Failed to check for latest plugin version.");
+            return;
+        }
+        // have the file, lets read it
+        String latest_version = "";
+        try {
+            FileReader fr = new FileReader(getToolsFolder() + LATEST_VERSION_FILENAME);
+            BufferedReader br = new BufferedReader(fr);
+            latest_version = br.readLine();
+            br.close();
+        } catch (IOException e) {
+            // Failed to read file
+            return;
+        }
+        // We should have latest file version now
+        
+    }
+
+    private String getToolsFolder() {
+        return BaseNoGui.getSketchbookPath() + TOOLS_FOLDER;
+    }
+
+    private boolean downloadFile(String filename) {
+        // Download the given file and save in /tools/ folder
+        String file = DOWNLOAD_URL + filename;
+        String outfile = getToolsFolder() + filename;
+        System.out.println("\nDownloading '" + file + "'\nSaving to: '" + outfile + "'");
+        boolean fRet = false;
+        try {
+            URL url = new URL(file);
+            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+            FileOutputStream fos = new FileOutputStream(outfile);
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
+            rbc.close();
+            fRet = true;
+        } catch (IOException e) {
+            // Failed to download the file from IOException
+        }
+        return fRet;
     }
 
     /*
