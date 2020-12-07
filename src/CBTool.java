@@ -37,7 +37,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 public class CBTool implements Tool {
-    private static final String VERSION = "2.3.0";
+    private static final String VERSION = "2.3.1";
     private static final String NAME = "CBTool";
     private static final String DOWNLOAD_URL = "https://curtbinder.info/reefangel/";
     private static final String LATEST_VERSION_FILENAME = "cbtool-version.txt";
@@ -193,7 +193,7 @@ public class CBTool implements Tool {
             return;
         }
         // We should have latest file version now
-        
+
     }
 
     private String getToolsFolder() {

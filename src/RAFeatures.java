@@ -62,7 +62,7 @@ public class RAFeatures extends RABaseFile {
 
     public boolean hasPrerequisites() {
     	boolean fRet = false;
-        
+
         // Create folder, if non existant
         File dir = new File(getLibraryFolder());
         if (! dir.exists() ) {
@@ -137,7 +137,7 @@ public class RAFeatures extends RABaseFile {
     	baseFolder = sketchFolder;
     	this.sketchFileName = sketchFileName;
     }
-    
+
     public void loadDefaults() {
    	    listFeatures = build();
     	listDetectedFeatures = new ArrayList<>();
@@ -262,6 +262,6 @@ public class RAFeatures extends RABaseFile {
     }
 
     private String getBuildDateItem() {
-        return "#define CUSTOM_BUILD_DATE \"" + getDateString() +"\"\n";
+        return "#define CODE_BUILD_DATE \"" + getDateString() +"\"\n";
     }
 }
