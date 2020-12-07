@@ -176,6 +176,7 @@ public class CBTool implements Tool {
             - delete zip file
         - delete latest version file (stored in /tools/ folder)
     */
+    /*
     private void checkForLatestVersion() {
         if (!downloadFile(LATEST_VERSION_FILENAME)) {
             System.out.println("Failed to check for latest plugin version.");
@@ -195,6 +196,7 @@ public class CBTool implements Tool {
         // We should have latest file version now
 
     }
+    */
 
     private String getToolsFolder() {
         return BaseNoGui.getSketchbookPath() + TOOLS_FOLDER;
