@@ -37,7 +37,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 public class CBTool implements Tool {
-    private static final String VERSION = "2.3.1";
+    private static final String VERSION = "2.4.0";
     private static final String NAME = "CBTool";
     private static final String DOWNLOAD_URL = "https://curtbinder.info/reefangel/";
     private static final String LATEST_VERSION_FILENAME = "cbtool-version.txt";
@@ -48,12 +48,14 @@ public class CBTool implements Tool {
     RAFeatures featuresFile;
     RALabels labelsFile;
     RALibsVersion librariesVersion;
+    RACustomSettings customSettings;
 
     public void init(Editor editor) {
         this.editor = editor;
         featuresFile = new RAFeatures();
         labelsFile = new RALabels();
         librariesVersion = new RALibsVersion();
+        customSettings = new RACustomSettings();
     }
 
     public String getMenuTitle() {
@@ -82,10 +84,13 @@ public class CBTool implements Tool {
             featuresFile.process(program);
             saveFile(featuresFile.generateFile(), featuresFile.getFileName());
             System.out.println("\nFinished detecting Features.\nGenerating Custom Labels file from " + getFileName());
-            saveFile(labelsFile.generateFile(), labelsFile.getFileName());
             labelsFile.process(program);
-
-            System.out.println("\nFinished detecting Labels.");
+            saveFile(labelsFile.generateFile(), labelsFile.getFileName());
+            System.out.println("\nFinished detecting Labels.\nGenerating Cloud Authentication (if any) from " + getFileName());
+            // TODO process custom settings and display output
+            customSettings.process(program);
+            saveFile(customSettings.generateFile(), customSettings.getFileName());
+            System.out.println("\nFinished detecting Cloud Authentication.");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -106,11 +111,13 @@ public class CBTool implements Tool {
         featuresFile.init(BaseNoGui.getSketchbookPath(), getFileName());
         labelsFile.init(BaseNoGui.getSketchbookPath(), getFileName());
         librariesVersion.init(BaseNoGui.getSketchbookPath());
+        customSettings.init(BaseNoGui.getSketchbookPath(), getFileName());
     }
 
     private void loadDefaults() {
         featuresFile.loadDefaults();
         labelsFile.loadDefaults();
+        customSettings.loadDefaults();
     }
 
     private boolean hasPrerequisites() {
@@ -118,6 +125,9 @@ public class CBTool implements Tool {
             return false;
         }
         if (! featuresFile.hasPrerequisites()) {
+            return false;
+        }
+        if (! customSettings.hasPrerequisites()) {
             return false;
         }
         return true;

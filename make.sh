@@ -13,7 +13,8 @@ javac -target 1.8 -source 1.8 \
   src/RABaseFile.java \
   src/RAFeatures.java \
   src/RALabels.java \
-  src/RALibsVersion.java
+  src/RALibsVersion.java \
+  src/RACustomSettings.java
 
 if [ ! -d "tool" ]; then
   # tool directory doesn't exist, so create it
